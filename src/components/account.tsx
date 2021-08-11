@@ -15,23 +15,22 @@ const USER_DATA_QUERY = gql`
   }
 `;
 
-function Account() {
+function Account(props: { id: number }) {
   // Get token
   const auth_token = localStorage.getItem(fromShared.AUTH_TOKEN);
 
   // Get current user data
   const { loading, error, data } = useQuery(USER_DATA_QUERY, {
-    variables: { id: 2 },
+    variables: { id: props.id },
     context: {
       headers: {
         Authorization: `Bearer ${auth_token}`,
       },
     },
-    skip: !auth_token,
   });
 
   // Redirect
-  const [redirect, setRedirect] = useState(!auth_token);
+  const [redirect, setRedirect] = useState(false);
 
   function logout() {
     // remove token
@@ -54,17 +53,23 @@ function Account() {
       <div>
         <span>
           There was an error, refrech page or go back to
-          <a href="/">Login page</a>.
+          <a href="/"> Login page</a>.
         </span>
       </div>
     );
 
   return (
-    <div>
-      <span>{data.user.firstName}</span>
-      <span>{data.user.lastName}</span>
+    <div className="text-center">
+      <h1 className="mb-5">Account Screen</h1>
 
-      <button onClick={logout}>Logout</button>
+      <div className="row">
+        <h2>{data.user.firstName}</h2>
+        <h2>{data.user.lastName}</h2>
+      </div>
+
+      <button className="w-50 m-4" onClick={logout}>
+        Logout
+      </button>
     </div>
   );
 }

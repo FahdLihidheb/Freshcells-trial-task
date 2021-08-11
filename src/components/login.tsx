@@ -7,11 +7,14 @@ const LOGIN_MUTATION = gql`
   mutation Login($input: UsersPermissionsLoginInput!) {
     login(input: $input) {
       jwt
+      user {
+        id
+      }
     }
   }
 `;
 
-function Login() {
+function Login(props: { hundleLoggingIn: any }) {
   let [errorMesssage, setErrorMesssage] = useState("");
 
   let [redirect, setRedirect] = useState(false);
@@ -21,7 +24,7 @@ function Login() {
     password: "",
   });
 
-  const [LoginMutation, { data, loading }] = useMutation(LOGIN_MUTATION);
+  const [LoginMutation, { loading }] = useMutation(LOGIN_MUTATION);
 
   const loginAction = (e: any) => {
     e.preventDefault();
@@ -41,11 +44,16 @@ function Login() {
         .then(({ data }) => {
           // Set to local storage
           localStorage.setItem(fromShared.AUTH_TOKEN, data.login.jwt);
+          // Lift state up
+          props.hundleLoggingIn({
+            isLogged: true,
+            userId: data.login.user.id,
+          });
           // Redirect
           setRedirect(true);
         })
         .catch((error) => {
-          console.log(error);
+          setcredential({ ...credential, password: "" });
           setErrorMesssage("Email or password is not valid.");
         });
     } else {
@@ -53,46 +61,55 @@ function Login() {
     }
   };
 
-  if (redirect) return <Redirect to={{ pathname: "/account" }} />;
+  if (redirect) return <Redirect to="/account" />;
 
   return (
-    <form onSubmit={loginAction}>
-      <div className="form-inner">
-        <h2>Login: KTKwXm2grV4wHzW</h2>
-        {!!errorMesssage ? (
-          <span className="error">{errorMesssage}</span>
-        ) : (
-          <br />
-        )}
-        <div className="form-group">
-          <label htmlFor="email">Email</label>
-          <input
-            type="email"
-            name="email"
-            id="email"
-            onChange={(e) =>
-              setcredential({ ...credential, identifier: e.target.value })
-            }
-          />
+    <div className="text-center">
+      <h1>Login Screen</h1>
+
+      <small className="text-muted m-1">
+        {loading ? "Connecting..." : errorMesssage || "Hello!"}
+      </small>
+
+      <form onSubmit={loginAction}>
+        <div className="form-inner mt-5">
+          <div className="form-group m-1">
+            <input
+              type="email"
+              name="email"
+              id="email"
+              placeholder="Identifier"
+              onChange={(e) =>
+                setcredential({ ...credential, identifier: e.target.value })
+              }
+              value={credential.identifier}
+            />
+          </div>
+
+          <div className="form-group m-1">
+            <input
+              placeholder="Password"
+              type="password"
+              name="password"
+              id="password"
+              onChange={(e) =>
+                setcredential({ ...credential, password: e.target.value })
+              }
+              value={credential.password}
+            />
+          </div>
         </div>
 
-        <div className="form-group">
-          <label htmlFor="password">Password</label>
-          <input
-            type="password"
-            name="password"
-            id="password"
-            onChange={(e) =>
-              setcredential({ ...credential, password: e.target.value })
-            }
-          />
-        </div>
-      </div>
-
-      <button type="submit" value="LOGIN" disabled={loading}>
-        {loading ? "Connecting..." : "Login"}
-      </button>
-    </form>
+        <button
+          className="rounded m-2 w-50"
+          type="submit"
+          value="LOGIN"
+          disabled={loading}
+        >
+          Login
+        </button>
+      </form>
+    </div>
   );
 }
 
