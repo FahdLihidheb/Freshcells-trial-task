@@ -14,7 +14,7 @@ const LOGIN_MUTATION = gql`
   }
 `;
 
-function Login(props: { hundleLoggingIn: any }) {
+function Login(props: { handleLoggingIn: any }) {
   let [errorMesssage, setErrorMesssage] = useState("");
 
   let [redirect, setRedirect] = useState(false);
@@ -45,7 +45,7 @@ function Login(props: { hundleLoggingIn: any }) {
           // Set to local storage
           localStorage.setItem(fromShared.AUTH_TOKEN, data.login.jwt);
           // Lift state up
-          props.hundleLoggingIn({
+          props.handleLoggingIn({
             isLogged: true,
             userId: data.login.user.id,
           });
@@ -101,7 +101,7 @@ function Login(props: { hundleLoggingIn: any }) {
         </div>
 
         <button
-          className="rounded m-2 w-50"
+          className="rounded m-2"
           type="submit"
           value="LOGIN"
           disabled={loading}

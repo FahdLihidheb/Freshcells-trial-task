@@ -15,7 +15,7 @@ const USER_DATA_QUERY = gql`
   }
 `;
 
-function Account(props: { id: number }) {
+function Account(props: { id: number; handleLoggingIn: any }) {
   // Get token
   const auth_token = localStorage.getItem(fromShared.AUTH_TOKEN);
 
@@ -35,6 +35,11 @@ function Account(props: { id: number }) {
   function logout() {
     // remove token
     localStorage.removeItem(fromShared.AUTH_TOKEN);
+    // Lift state up
+    props.handleLoggingIn({
+      isLogged: false,
+      userId: -1,
+    });
     // Redirect to logout
     setRedirect(true);
   }

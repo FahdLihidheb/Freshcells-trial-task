@@ -14,7 +14,7 @@ import Account from "./components/account";
 function App() {
   const [loggedIn, setloggedIn] = useState({ isLogged: false, userId: -1 });
 
-  const hundleLoginChange = (loginData: {
+  const handleLoginChange = (loginData: {
     isLogged: boolean;
     userId: number;
   }) => {
@@ -26,11 +26,14 @@ function App() {
       <Router>
         <Switch>
           <Route exact path="/">
-            <Login hundleLoggingIn={hundleLoginChange} />
+            <Login handleLoggingIn={handleLoginChange} />
           </Route>
           <Route path="/account">
             {loggedIn.isLogged ? (
-              <Account id={loggedIn.userId} />
+              <Account
+                id={loggedIn.userId}
+                handleLoggingIn={handleLoginChange}
+              />
             ) : (
               <Redirect to="/" />
             )}
